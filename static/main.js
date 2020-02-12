@@ -12,15 +12,41 @@ var app = new Vue({
         $.ajax({
           url: "/api/v1/tweets/",
           method: "POST",
-          data: this.newTweet
-        }).done(data => {
-          this.tweets.unshift(data);
+          data: this.newTweet,
+          success: data => {
+            this.tweets.unshift(data);
+            this.newTweet.message = "";
+            this.newTweet.name = "";
+            this.invalidName = false;
+            this.invalidMessage = false;
+          },
+          error: (XHR, textStatus, errorThrown) => {
+            alert(
+              "There was a problem posting the tweet: " +
+                textStatus +
+                " " +
+                errorThrown
+            );
+          }
         });
-        this.newTweet.message = "";
-        this.newTweet.name = "";
-        this.invalidName = false;
-        this.invalidMessage = false;
       }
+    },
+    refreshTweets: function() {
+      $.ajax({
+        url: "/api/v1/tweets/",
+        method: "GET",
+        success: data => {
+          this.tweets = data;
+        },
+        error: (XHR, textStatus, errorThrown) => {
+          alert(
+            "There was a problem getting the tweets: " +
+              textStatus +
+              " " +
+              errorThrown
+          );
+        }
+      });
     }
   },
   data: function() {
@@ -35,12 +61,7 @@ var app = new Vue({
     };
   },
   created: function() {
-    $.ajax({
-      url: "/api/v1/tweets/",
-      method: "GET"
-    }).done(data => {
-      this.tweets = data;
-    });
+    this.refreshTweets();
   },
   filters: {
     showDate: function(value) {
