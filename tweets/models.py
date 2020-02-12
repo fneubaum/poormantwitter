@@ -7,6 +7,10 @@ class Tweet(models.Model):
     message = models.CharField(max_length=50, null=False)
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return "Message by " + self.name 
+    
+
     class Meta:
         ordering = ["-created", "name"]
 
